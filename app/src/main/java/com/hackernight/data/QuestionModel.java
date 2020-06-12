@@ -2,7 +2,6 @@ package com.hackernight.data;
 
 import android.app.Application;
 import android.util.Log;
-
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -32,7 +31,7 @@ public class QuestionModel extends Application {
                         Question question = new Question(response.getJSONArray(i).getString(0),
                                 response.getJSONArray(i).getBoolean(1));
 
-                         Log.d("TAGAA",""+question);
+                        //Log.d("TAGAA",""+question);
 
                         //Adding question to question Array List
                         questionsArrayList.add(question);
