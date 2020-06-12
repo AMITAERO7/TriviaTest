@@ -21,20 +21,21 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
-        android:layout_width="331dp"
-        android:layout_height="91dp"
+        android:layout_width="338dp"
+        android:layout_height="206dp"
         android:layout_marginTop="132dp"
         app:cardCornerRadius="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" >
+        app:layout_constraintTop_toBottomOf="@+id/textView2">
 
         <TextView
             android:id="@+id/question_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="24sp"
-            android:text="This is for something !!!Wait" />
+            android:layout_gravity="center_vertical"
+            android:text="This is for something !!!Wait"
+            android:textSize="24sp" />
 
     </androidx.cardview.widget.CardView>
 

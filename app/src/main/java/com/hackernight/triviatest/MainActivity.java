@@ -3,9 +3,11 @@ package com.hackernight.triviatest;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
@@ -89,8 +91,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         int answerId = 0;
 
-        if (userChooseCorrect == answerIsTrue)
+        if (userChooseCorrect == answerIsTrue){
+            fadeAnimation();
             answerId = R.string.correctAnswer;
+        }
         else{
             shakeAnimation();
             answerId = R.string.wrongAnswer;
@@ -105,10 +109,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         questionCounterTextView.setText(currentQuestionIndex+"/"+questions.size());
     }
 
+    private void fadeAnimation(){
+        final CardView cardView = findViewById(R.id.cardView);
+
+        AlphaAnimation alphaAnimation = new AlphaAnimation(1.0f,0.0f);
+        alphaAnimation.setDuration(350);
+        alphaAnimation.setRepeatCount(1);
+        alphaAnimation.setRepeatMode(Animation.REVERSE);
+
+        cardView.setAnimation(alphaAnimation);
+        alphaAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                cardView.setCardBackgroundColor(Color.GREEN);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                cardView.setCardBackgroundColor(Color.WHITE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+    }
+
     private void shakeAnimation(){
         Animation animation = AnimationUtils.loadAnimation(MainActivity.this,R.anim.shake_animation);
-        CardView cardView = findViewById(R.id.cardView);
+        final CardView cardView = findViewById(R.id.cardView);
         cardView.setAnimation(animation);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                cardView.setCardBackgroundColor(Color.RED);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                cardView.setCardBackgroundColor(Color.WHITE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
     }
 
 }
