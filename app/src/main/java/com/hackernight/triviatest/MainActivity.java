@@ -5,7 +5,6 @@ import androidx.cardview.widget.CardView;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -15,10 +14,11 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hackernight.controller.AppController;
 import com.hackernight.data.AnswerListAsyncResponse;
 import com.hackernight.data.QuestionModel;
 import com.hackernight.model.Question;
+import com.hackernight.model.Score;
+import com.hackernight.util.Prefs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,11 +33,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageButton nextButton;
     private int currentQuestionIndex = 0;
     private List<Question> questions;
+    private int scoreCounter = 0 ;
+    private Score score;
+    private TextView scoretextView;
+    private Prefs prefs;
+    private  TextView highscoretextView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+            score = new Score();
+
+            prefs =  new Prefs(MainActivity.this);
+
+            //get previous state
+            currentQuestionIndex = prefs.getState();
 
             nextButton = findViewById(R.id.next_button);
             prevButton = findViewById(R.id.prev_button);
@@ -45,11 +58,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             falseButton = findViewById(R.id.false_button);
             questionCounterTextView = findViewById(R.id.counter_question_text);
             questionTextView = findViewById(R.id.question_textview);
+            scoretextView = findViewById(R.id.score_textview);
+            highscoretextView = findViewById(R.id.highestscoretextview);
 
             nextButton.setOnClickListener(this);
             prevButton.setOnClickListener(this);
             trueButton.setOnClickListener(this);
             falseButton.setOnClickListener(this);
+
+            scoretextView.setText("Current Score: "+String.valueOf(score.getScore()));
+            highscoretextView.setText("Highest Score: "+String.valueOf(prefs.getHighScore()));
 
             questions = new QuestionModel().getQuestion(new AnswerListAsyncResponse() {
             @Override
@@ -93,15 +111,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (userChooseCorrect == answerIsTrue){
             fadeAnimation();
+            addPoints();
             answerId = R.string.correctAnswer;
         }
         else{
             shakeAnimation();
+            deductPoints();
             answerId = R.string.wrongAnswer;
         }
 
         Toast.makeText(this,answerId,Toast.LENGTH_SHORT).show();
 
+    }
+
+    public void addPoints(){
+        scoreCounter +=100;
+        score.setScore(scoreCounter);
+        scoretextView.setText("Current Score: "+String.valueOf(score.getScore()));
+    }
+
+    public void deductPoints(){
+        scoreCounter -=100;
+        if (scoreCounter>0){
+            score.setScore(scoreCounter);
+        }else{
+            scoreCounter = 0 ;
+            score.setScore(scoreCounter);
+        }
+        scoretextView.setText("Current Score: "+String.valueOf(score.getScore()));
     }
 
     private void updateQuestion() {
@@ -127,6 +164,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onAnimationEnd(Animation animation) {
                 cardView.setCardBackgroundColor(Color.WHITE);
+                currentQuestionIndex = (currentQuestionIndex + 1) % questions.size() ;
+                updateQuestion() ;
             }
 
             @Override
@@ -149,6 +188,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onAnimationEnd(Animation animation) {
                 cardView.setCardBackgroundColor(Color.WHITE);
+                currentQuestionIndex = (currentQuestionIndex + 1) % questions.size() ;
+                updateQuestion() ;
             }
 
             @Override
@@ -156,6 +197,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        prefs.saveHighScore(score.getScore());
+        prefs.setState(currentQuestionIndex);
     }
 
 }
